@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 public class GestorEcommerce extends JFrame {
     private JButton btnProducto, btnCliente, btnPedido;
+    private JButton prAgregar, prModificar, prEliminar, prBuscar, cAgregar, cModificar, cEliminar, cBuscar, pCrear;
     private JPanel panelContenedor;
     private GestorBD dbManager;
 
@@ -26,6 +27,18 @@ public class GestorEcommerce extends JFrame {
         btnProducto = new JButton("Productos");
         btnCliente = new JButton("Clientes");
         btnPedido = new JButton("Pedidos");
+
+        prAgregar = new JButton("Agregar Producto");
+        prModificar = new JButton("Modificar Producto");
+        prEliminar = new JButton("Eliminar Producto");
+        prBuscar = new JButton("Buscar Producto");
+
+        cAgregar = new JButton("Añadir Cliente");
+        cModificar = new JButton("Modificar Cliente");
+        cEliminar = new JButton("Eliminar Cliente");
+        cBuscar = new JButton("Buscar Cliente");
+
+        pCrear = new JButton("Crear Pedidos");
 
         // Tabla de resultados
         tableModel = new DefaultTableModel();
@@ -78,11 +91,13 @@ public class GestorEcommerce extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panelBotones.add(new JButton("Agregar"));
-        panelBotones.add(new JButton("Modificar"));
-        panelBotones.add(new JButton("Eliminar"));
-        panelBotones.add(new JButton("Buscar"));
+        panelBotones.add(prAgregar);
+        panelBotones.add(prModificar);
+        panelBotones.add(prEliminar);
+        panelBotones.add(prBuscar);
         panel.add(panelBotones, BorderLayout.NORTH);
+
+        panel.add(new JScrollPane(resultTable), BorderLayout.CENTER);
 
         return panel;
     }
@@ -92,13 +107,13 @@ public class GestorEcommerce extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panelBotones.add(new JButton("Agregar"));
-        panelBotones.add(new JButton("Modificar"));
-        panelBotones.add(new JButton("Eliminar"));
-        panelBotones.add(new JButton("Buscar"));
+        panelBotones.add(cAgregar);
+        panelBotones.add(cModificar);
+        panelBotones.add(cEliminar);
+        panelBotones.add(cBuscar);
         panel.add(panelBotones, BorderLayout.NORTH);
 
-
+        panel.add(new JScrollPane(resultTable), BorderLayout.CENTER);
         return panel;
     }
 
@@ -106,12 +121,11 @@ public class GestorEcommerce extends JFrame {
     private JPanel crearPanelPedidos() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelBotones.add(new JButton("Modificar"));
-        panelBotones.add(new JButton("Buscar"));
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelBotones.add(pCrear);
         panel.add(panelBotones, BorderLayout.NORTH);
 
-
+        panel.add(new JScrollPane(resultTable), BorderLayout.CENTER);
         return panel;
     }
 
