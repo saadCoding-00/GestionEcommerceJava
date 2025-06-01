@@ -25,7 +25,9 @@ public class GestorBD {
             return false;
         }
     }
-
+/////////////////
+//PRODUCTOS//
+/////////////////
     public void agregarProducto(String nombre, String descripcion, double precio, int categoria_id, int stock) throws SQLException {
         String query = "INSERT INTO productos (nombre, descripcion, precio, categoria_id, stock) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -108,6 +110,143 @@ public class GestorBD {
         return categorias;
     }
     
+/////////////////
+//CLIENTES//
+/////////////////
+
+public void agregarCliente(String nombre, String email, String telefono, String direccion) throws SQLException {
+    String query = "INSERT INTO clientes (nombre,email,telefono,direccion) VALUES (?, ?, ?, ?)";
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, nombre);
+        stmt.setString(2, email);
+        stmt.setString(3, telefono);
+        stmt.setString(4, direccion);
+        stmt.executeUpdate();
+    }
+}
+public Object[][] listarClientes() throws SQLException {
+    String query = "SELECT id,nombre,email,telefono,direccion FROM clientes";
+    return executeQuery(query);
+}
+public Object[] obtenerClientePorId(int id) throws SQLException {
+    String query = "SELECT id,nombre,email,telefono,direccion FROM clientes WHERE id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, id);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("nombre"),
+                    rs.getString("email"),
+                    rs.getString("telefono"),
+                    rs.getString("direccion")
+                };
+            }
+            return null;
+        }
+    }
+}
+public void modificarCliente(int id, String nombre, String email, String telefono, String direccion) throws SQLException {
+    String query = "UPDATE clientes SET nombre = ?, email = ?, telefono = ?, direccion = ? WHERE id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, nombre);
+        stmt.setString(2, email);
+        stmt.setString(3, telefono);
+        stmt.setString(4, direccion);
+        stmt.setInt(5, id);
+        stmt.executeUpdate();
+    }
+}
+public boolean eliminarCliente(int id) throws SQLException {
+    String query = "DELETE FROM clientes WHERE id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, id);
+        int affectedRows = stmt.executeUpdate();
+        return affectedRows > 0;
+    }
+}
+public Object[][] buscarClientes(String criterio) throws SQLException {
+    String query = "SELECT id,nombre,email,telefono,direccion FROM clientes WHERE nombre LIKE ?";
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, "%" + criterio + "%");
+        try (ResultSet rs = stmt.executeQuery()) {
+            return processResultSet(rs);
+        }
+    }
+}
+
+
+/////////////////
+//PEDIDOS//
+/////////////////
+
+public List<Object[]> obtenerTodosLosClientes() throws SQLException {
+    List<Object[]> lista = new ArrayList<>();
+    String query = "SELECT id, nombre FROM clientes";
+    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        while (rs.next()) {
+            lista.add(new Object[]{rs.getInt("id"), rs.getString("nombre")});
+        }
+    }
+    return lista;
+}
+
+public List<Object[]> obtenerTodosLosProductos() throws SQLException {
+    List<Object[]> lista = new ArrayList<>();
+    String query = "SELECT id, nombre, precio FROM productos";
+    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        while (rs.next()) {
+            lista.add(new Object[]{rs.getInt("id"), rs.getString("nombre"), rs.getDouble("precio")});
+        }
+    }
+    return lista;
+}
+
+public int insertarPedido(int clienteId, double total) throws SQLException {
+    String query = "INSERT INTO pedidos (cliente_id, estado, total) VALUES (?, 'pendiente', ?)";
+    try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        stmt.setInt(1, clienteId);
+        stmt.setDouble(2, total);
+        stmt.executeUpdate();
+        try (ResultSet rs = stmt.getGeneratedKeys()) {
+            if (rs.next()) return rs.getInt(1);
+        }
+    }
+    throw new SQLException("No se pudo insertar el pedido");
+}
+
+public void insertarDetallePedido(int pedidoId, int productoId, int cantidad, double precioUnitario) throws SQLException {
+    String query = "INSERT INTO detalles_pedido (pedido_id, producto_id, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
+    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, pedidoId);
+        stmt.setInt(2, productoId);
+        stmt.setInt(3, cantidad);
+        stmt.setDouble(4, precioUnitario);
+        stmt.executeUpdate();
+    }
+}
+public List<Object[]> obtenerTodosLosPedidos() throws SQLException {
+    List<Object[]> lista = new ArrayList<>();
+    String query = "SELECT id, cliente_id, fecha, estado, total FROM pedidos";
+
+    try (Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(query)) {
+
+        while (rs.next()) {
+            lista.add(new Object[]{
+                rs.getInt("id"),
+                rs.getInt("cliente_id"),
+                rs.getString("fecha"),
+                rs.getString("estado"),
+                rs.getDouble("total")
+            });
+        }
+    }
+
+    return lista;
+}
+
+
 
     private Object[][] executeQuery(String query) throws SQLException {
         try (Statement stmt = conn.createStatement();
