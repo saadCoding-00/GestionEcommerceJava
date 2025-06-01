@@ -166,7 +166,7 @@ public class GestorEcommerce extends JFrame {
         cBuscar.addActionListener(e -> mostrarFormularioBuscarCliente());
 
         pCrear.addActionListener(e -> mostrarFormularioCrearPedido());
-        pListar.addActionListener(e -> listarTodosPedidos());
+        pListar.addActionListener(e -> listarPedidos());
 
     }
 
@@ -748,7 +748,7 @@ public class GestorEcommerce extends JFrame {
         // Cargar clientes
         try {
             for (Object[] cliente : dbManager.obtenerTodosLosClientes()) {
-                clienteCombo.addItem(cliente[0] + " - " + cliente[1]);  // id - nombre
+                clienteCombo.addItem(cliente[0] + " - " + cliente[1]); 
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes");
@@ -842,8 +842,6 @@ public class GestorEcommerce extends JFrame {
     
     
 
-    private void listarTodosPedidos() {
-    }
 
     @Override
     protected void finalize() throws Throwable {

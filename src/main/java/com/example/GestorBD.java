@@ -227,7 +227,7 @@ public void insertarDetallePedido(int pedidoId, int productoId, int cantidad, do
 }
 public List<Object[]> obtenerTodosLosPedidos() throws SQLException {
     List<Object[]> lista = new ArrayList<>();
-    String query = "SELECT id, cliente_id, fecha, estado, total FROM pedidos";
+    String query = "SELECT id, cliente_id, fecha_pedido, estado, total FROM pedidos";
 
     try (Statement stmt = conn.createStatement();
          ResultSet rs = stmt.executeQuery(query)) {
@@ -236,7 +236,7 @@ public List<Object[]> obtenerTodosLosPedidos() throws SQLException {
             lista.add(new Object[]{
                 rs.getInt("id"),
                 rs.getInt("cliente_id"),
-                rs.getString("fecha"),
+                rs.getString("fecha_pedido"),
                 rs.getString("estado"),
                 rs.getDouble("total")
             });
