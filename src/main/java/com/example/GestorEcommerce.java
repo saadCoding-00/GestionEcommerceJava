@@ -843,10 +843,5 @@ public class GestorEcommerce extends JFrame {
     
 
 
-    @Override
-    protected void finalize() throws Throwable {
-        dbManager.disconnect();
-        super.finalize();
-    }
-
+   
 }
