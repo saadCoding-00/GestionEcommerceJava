@@ -16,7 +16,7 @@ public class GestorBD {
         try {
             String url = "jdbc:mysql://localhost:3306/gestion_ecommerce";
             String user = "root";
-            String password = "babazwin90";
+            String password = "root";
             conn = DriverManager.getConnection(url, user, password);
             System.out.println("Conexión a la base de datos exitosa.");
             return true;
