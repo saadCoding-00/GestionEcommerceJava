@@ -3,12 +3,9 @@ package com.example;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -20,12 +17,15 @@ public class GestorEcommerce extends JFrame {
     private JPanel panelContenedor;
     private GestorBD dbManager;
 
+    //TABLA Y MODEL TABLE PARA INSERTAR LISTA DE PRODUCTOS//
     private JTable productosTable;
     private DefaultTableModel productosTableModel;
 
+    //TABLA Y MODEL TABLE PARA INSERTAR LISTA DE CLIENTES//
     private JTable clientesTable;
     private DefaultTableModel clientesTableModel;
 
+    //TABLA Y MODEL TABLE PARA INSERTAR LISTA DE PEDIDOS//
     private JTable resultTable;
     private DefaultTableModel tableModel;
 
@@ -35,7 +35,7 @@ public class GestorEcommerce extends JFrame {
         setupLayout();
         setupListeners();
     }
-
+//INICIALIZAR LOS COMPONENTES DECLARADO ARRIBA//
     private void initializeComponents() {
 
         btnProducto = new JButton("Productos");
@@ -69,6 +69,7 @@ public class GestorEcommerce extends JFrame {
     }
 
     private void setupLayout() {
+        //SETUP DE LA VENTANA PRINCIPAL
         setTitle("Gestor de E-commerce");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
@@ -89,24 +90,26 @@ public class GestorEcommerce extends JFrame {
         panelContenedor.add(crearPanelClientes(), "CLIENTES");
         panelContenedor.add(crearPanelPedidos(), "PEDIDOS");
 
-        // Acciones
+        // AL PULSAR CADA BUTTON SE GENERA UN PANEL DIFERENTE PARA INSERTAR DATOS 
         btnProducto.addActionListener(e -> mostrarPanel("PRODUCTOS"));
         btnCliente.addActionListener(e -> mostrarPanel("CLIENTES"));
         btnPedido.addActionListener(e -> mostrarPanel("PEDIDOS"));
 
-        // Layout principal
+        // SETUP DE LAYOUT PRINCIPAL
+        //TENEMOS 2 PANELES UNO ARRIBA DE BUTTONES Y UNO ABAJO DENDE SE GENERAN BUTTONES Y UNA TABLA PARA INSERTAR DATOS DE LA TABLAS CON COLUMNAS Y FILAS
         setLayout(new BorderLayout());
         add(manejarPanel, BorderLayout.NORTH);
         add(panelContenedor, BorderLayout.CENTER);
 
     }
 
+    //AQUI METODO PARA MONTRAR EL PANEL CON CARD LAYOUT
     private void mostrarPanel(String nombrePanel) {
         CardLayout cl = (CardLayout) panelContenedor.getLayout();
         cl.show(panelContenedor, nombrePanel);
     }
 
-    // Productos:
+    // PANEL DE PRODUCTOS
     private JPanel crearPanelProductos() {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -123,7 +126,7 @@ public class GestorEcommerce extends JFrame {
         return panel;
     }
 
-    // Clientes:
+    // PANEL DE CLIENTES
     private JPanel crearPanelClientes() {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -139,7 +142,7 @@ public class GestorEcommerce extends JFrame {
         return panel;
     }
 
-    // Pedidos:
+    // PANEL DE PEDIDOS
     private JPanel crearPanelPedidos() {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -152,6 +155,7 @@ public class GestorEcommerce extends JFrame {
         return panel;
     }
 
+    //AGREGAR LISTENER A LOS BUTTONES CADA UNO CON SU FUNCION ADECUADA 
     private void setupListeners() {
         prAgregar.addActionListener(e -> mostrarFormularioAgregarProducto());
         prListar.addActionListener(e -> listarTodosProductos());
@@ -170,6 +174,15 @@ public class GestorEcommerce extends JFrame {
 
     }
 
+
+
+ ////////////
+ ///////////
+ //MANEJAR PRODUCTOS
+ //////////  
+ /////////
+
+    //MOSTRAR UN FORMULARIO EN FORMATO DIALOGO PARA QUE EL USUARIO PUEDA INSERTAR LOS DATOS DE PRODUCTOS
     private void mostrarFormularioAgregarProducto() {
         JDialog agregarDialog = new JDialog(this, "Agregar Producto", true);
         JPanel panel = new JPanel(new GridLayout(10, 2, 5, 5));
@@ -179,6 +192,8 @@ public class GestorEcommerce extends JFrame {
         JTextField precioField = new JTextField(20);
         JTextField stockField = new JTextField(20);
     
+        //AQUI USAMOS JCOMBOBOX PARA INSERTAR LAS CATEGORIAS DESDE LA TABLA CATOGORIAS 
+        //Y EL USURIO SOLO ELIGA PORQUE ES DIFICIL RECORDAR DE LOS NOMBRES DE CATEGORIA
         final Map<String, Integer> categorias = new HashMap<>();
         JComboBox<String> categoriaComboBox = new JComboBox<>();
     
@@ -190,7 +205,7 @@ public class GestorEcommerce extends JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(agregarDialog, "Error al obtener categorías: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-            return; // No seguir si no se pueden cargar las categorías
+            return; //NO SIGUE SI NO PUEDEN CARGAR LAS CATEGORIAS Y AGREGA UN DIALOGO COMO ERROR 
         }
     
         panel.add(new JLabel("Nombre (obligatorio):"));
@@ -204,6 +219,7 @@ public class GestorEcommerce extends JFrame {
         panel.add(new JLabel("Categoría (obligatorio):"));
         panel.add(categoriaComboBox);
     
+        //AÑADIMOS UN LISTENER PARA EL BUTTON DE GUARDAR LOS DATOS QUE SE CONECTA CON LA BASE DE DATOS  
         JButton guardarButton = new JButton("Guardar");
         guardarButton.addActionListener(e -> {
             String nombre = nombreField.getText().trim();
@@ -211,9 +227,10 @@ public class GestorEcommerce extends JFrame {
             double precio;
             int stock;
     
+
             try {
-                precio = Double.parseDouble(precioField.getText().trim());
-                stock = Integer.parseInt(stockField.getText().trim());
+                precio = Double.parseDouble(precioField.getText().trim());//PARSEAR EL PRECIO PARA OBTENER BIEN EL TEXTO DE TEXTFIELD
+                stock = Integer.parseInt(stockField.getText().trim());//PARSEAR EL STOCK PARA OBTENER BIEN EL TEXTO DE TEXTFIELD
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(agregarDialog, "Precio y stock deben ser numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -248,7 +265,7 @@ public class GestorEcommerce extends JFrame {
     }
     
     
-
+    //LISTAR TODOS LOS PRODUCTOS EN PRODUCTOSTABLEMODEL
     private void listarTodosProductos() {
         productosTableModel.setRowCount(0);
         productosTableModel.setColumnCount(0);
@@ -269,7 +286,10 @@ public class GestorEcommerce extends JFrame {
             ex.printStackTrace();
         }
     }
-
+//MOSTRAR UN DIALOGO PARA MODIFICAR EL PRODUCTO 
+//EL USUARIO INGRESA EL ID DEL PRODUCTO Y OBTENEMOS CON GESTORDB EL PRODUCTOPORID
+//Y MOSTRAMOS UN DIALOGO CONO LOS CAMPOS DEL PRODUCTO Y CON UN JTEXTFIELD PARA CAMBIAR LOS DATOS
+//Y CON UN JCOMBOBOX PUEDA ELEGIR LA CATEGORIA
     private void mostrarFormularioModificarProducto() {
         String idStr = JOptionPane.showInputDialog(this, "Ingrese el ID del producto a modificar:",
                 "Modificar Producto", JOptionPane.QUESTION_MESSAGE);
@@ -289,7 +309,7 @@ public class GestorEcommerce extends JFrame {
                     Map<String, Integer> categorias = dbManager.obtenerCategorias();
                     JComboBox<String> categoriaComboBox = new JComboBox<>(categorias.keySet().toArray(new String[0]));
 
-                    // Selecciona la categoría actual del producto
+                    // SELECCIONAR LA CATEGORIA ACTUAL DEL PRODUCTO
                     for (Map.Entry<String, Integer> entry : categorias.entrySet()) {
                         if (entry.getValue().equals((Integer) producto[4])) {
                             categoriaComboBox.setSelectedItem(entry.getKey());
@@ -378,6 +398,9 @@ public class GestorEcommerce extends JFrame {
         }
     }
 
+    //ELIMINAR EL PRODUCTO 
+    //DEPENDE DEL ID INGRESADO POR EL USUARIO
+    //Y PREGUNTAR EL USUARIO SI ESTA SEGURO
     private void eliminarProducto() {
         String idStr = JOptionPane.showInputDialog(this, "Ingrese el ID del producto a eliminar:", "Eliminar Producto",
                 JOptionPane.QUESTION_MESSAGE);
@@ -409,6 +432,8 @@ public class GestorEcommerce extends JFrame {
         }
     }
 
+    //MOSTRAR FORMULARIO DE BUSCAR PRODUCTO
+    //INGRESAR EL NOMBRE DEL PRODUCTO A BUSCAR
     private void mostrarFormularioBuscarProducto() {
         JPanel buscarPanel = new JPanel(new FlowLayout());
         JTextField buscarField = new JTextField(20);
@@ -466,9 +491,11 @@ public class GestorEcommerce extends JFrame {
     /////////////
     /////////////
     ////////////
-    //Clientes//
+    //MANEJAR CLIENTES
     /////////////
     ////////////
+
+    //MOSTRAR FORMULARIO EN FORMAT DE DIALOGO PARA AGREGAR EL CLIENTE
     private void mostrarFormularioAgregarCliente() {
         JDialog agregarDialog = new JDialog(this, "Agregar Cliente", true);
         JPanel panel = new JPanel(new GridLayout(10, 2, 5, 5));
@@ -499,7 +526,7 @@ public class GestorEcommerce extends JFrame {
             String direccion = direccionField.getText().trim();
     
            
-    
+    //MANEJANDO ERRORES PARA LOS CAMPOS SI ETAN VACIOS Y SI EL FORMATO DE CORREO Y TELEFONO NO SON ADECUADOS
             if (nombre.isEmpty() || email.isEmpty() || telefono.isEmpty()) {
                 JOptionPane.showMessageDialog(agregarDialog, "Campos obligatorios vacíos o inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -535,6 +562,7 @@ public class GestorEcommerce extends JFrame {
         agregarDialog.setVisible(true);
     }
 
+    //LISTAR TODOS LOS CLIENTES Y INSERTAR COLUMNAS Y FILAS EN CLIENTESTABLEMODEL
     private void listarTodosClientes() {
         clientesTableModel.setRowCount(0);
         clientesTableModel.setColumnCount(0);
@@ -556,6 +584,8 @@ public class GestorEcommerce extends JFrame {
         }
     }
 
+    //MOSTRAR FORMULARIO MODIFICAR CLIENTE 
+    //PEDIR EL ID Y APORTAR LOS CAMPOS DEL CLIENTE ADECUADO
     private void mostrarFormularioModificarCliente() {
         String idStr = JOptionPane.showInputDialog(this, "Ingrese el ID del cliente a modificar:", "Modificar Cliente", JOptionPane.QUESTION_MESSAGE);
         if (idStr != null && !idStr.isEmpty()) {
@@ -593,7 +623,7 @@ public class GestorEcommerce extends JFrame {
                         String telefono = telefonoField.getText().trim();
                         String direccion = direccionField.getText().trim();
                         
-
+//MANEJANDO LOS MISMOS ERRORES
                         if (nombre.isEmpty() || email.isEmpty() || telefono.isEmpty() ) {
                             JOptionPane.showMessageDialog(modificarDialog, "Los campos Nombre, Email, Teléfono  son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
                             return;
@@ -642,6 +672,7 @@ public class GestorEcommerce extends JFrame {
         }
     }
 
+    //ELIMINAR CLIENTE POR SU ID INGRESADO POR EL USUARIO
     private void eliminarCliente() {
         String idStr = JOptionPane.showInputDialog(this, "Ingrese el ID del cliente a eliminar:", "Eliminar Cliente", JOptionPane.QUESTION_MESSAGE);
         if (idStr != null && !idStr.isEmpty()) {
@@ -666,6 +697,7 @@ public class GestorEcommerce extends JFrame {
         }
     }
 
+    //BUSCAR CLIENTE POR SU NOMBRE
     private void mostrarFormularioBuscarCliente() {
         JPanel buscarPanel = new JPanel(new FlowLayout());
         JTextField buscarField = new JTextField(20);
@@ -716,6 +748,15 @@ public class GestorEcommerce extends JFrame {
         buscarDialog.setVisible(true);
     }
     
+
+    ////////////
+    ///////////
+    //PEDIDOS
+    //////////
+    /////////
+
+
+    //LISTAR TODOS LOS PEDIDOS EN LA TABLA RESULTTABLE
     private void listarPedidos() {
         try {
             List<Object[]> pedidos = dbManager.obtenerTodosLosPedidos();
@@ -734,7 +775,12 @@ public class GestorEcommerce extends JFrame {
         }
     }
     
-
+    //MOSTRAR FORMULARIO PARA CREAR NUEVO PEDIDO
+    //TENEMOS 2 JCOMBOBOX 
+    //UNO PARA CLIENTES DONDE EL USUARIO PUEDE ELEGIR UN CLIENTE
+    //Y EL OTRO PARA PRODUCTOS PARA QUE PUEDE ELEGIR EL PRODUCTO
+    //Y TENEMOS 2 BUTTONES UNO PARA CREAR PEDIDO PARA QUE SE VE EN LA TABLA COMO CARROTI
+    //Y TENEMOS EL BUTTON PARA EL PROCESO DE CHECKOUT ES GUARDAR PEDIDO PARA QUE SE GUARDA Y SE LISTA TODOS LOS PEDIDOS EN RESULTTABLE 
     private void mostrarFormularioCrearPedido() {
         JDialog dialog = new JDialog(this, "Nuevo Pedido", true);
         dialog.setLayout(new BorderLayout());
@@ -822,7 +868,7 @@ public class GestorEcommerce extends JFrame {
     
                 JOptionPane.showMessageDialog(dialog, "Pedido guardado con éxito");
                 dialog.dispose();
-                listarPedidos(); // refrescar tabla
+                listarPedidos(); 
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(dialog, "Error al guardar pedido: " + ex.getMessage());
             }
